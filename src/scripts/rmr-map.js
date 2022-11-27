@@ -7,7 +7,8 @@
 
   const
   Mapbox = require('mapbox-gl/dist/mapbox-gl.js'),
-  RMR = require('rmr-util');
+  RMR = require('rmr-util'),
+  Popover = require('../../node_modules/rmr-popover/src/scripts/rmr-popover.js');
 
   const
   styles = {
@@ -34,7 +35,7 @@
     }
 
     const
-    coords = options.data.map(p => { return [p.location.lon, p.location.lat]; }),
+    coords = options.pins.map(p => { return [p.location.lon, p.location.lat]; }),
     bounds = new Mapbox.LngLatBounds(
       coords[0],
       coords[0]
@@ -61,30 +62,56 @@
         const marker = document.createElement('div');
         marker.className = 'rmr-map-point';
         marker.setAttribute('rmr-map-index', i);
-        marker.setAttribute('title', options.data[i].title);
+
+        const p = options.pins[i];
+
+        marker.setAttribute('title', p.title);
+        marker.setAttribute('data-popover', p.title);
         marker.addEventListener('click', e => {
-          self.selectPoint(
-            parseInt(e.target.getAttribute('rmr-map-index'), 10)
+          self.selectPin(
+            parseInt(e.target.getAttribute('rmr-map-index'), 10),
+            true
           );
         });
 
+
         const m = new Mapbox.Marker({
           element: marker,
-          offset: [0, -15],
-        }).setLngLat(c);
+          offset: [0, 0],
+        }).setLngLat(c)
+
+        if (options.popup) {
+          const popup = new Mapbox.Popup({ offset: 15 }).setHTML(
+            options.popup(i)
+          );
+          m.setPopup(popup);
+        }
 
         m.addTo(self.Box);
         i++;
       }
 
-      self.center();
+      const popover = new Popover({
+        root : element,
+        debug: false,
+        delay: {
+          pop: 200,
+          unpop: 0
+        }
+//         factory : function(node) {
+//           console.log(node);
+//           return { 'content' : node.getAttribute('rmr-map-index') };
+//         }
+      });
+
+//      self.center();
 
       self.Box.on('drag', () => {
         // mark as dirty
       });
     });
 
-    this.selectPoint = (index) => {
+    this.selectPin = function(index, center) {
       const markers = element.querySelectorAll('.rmr-map-point');
       markers.forEach(m => {
         if (m.getAttribute('rmr-map-index') == index) {
@@ -93,6 +120,22 @@
           m.classList.remove('rmr-selected');
         }
       });
+
+      if (center) {
+        this.Box.flyTo({
+          center: coords[index],
+          zoom: 11,
+          speed: 3,
+          curve: 1,
+          easing(t) {
+            return t;
+          }
+        });
+      }
+
+      if (options.onSelect) {
+        options.onSelect(index);
+      }
     };
 
     this.zoomIn = () => {
@@ -105,13 +148,14 @@
 
     this.center = () => {
 
-      if (options.data.length > 1) {
+      if (options.pins.length > 1) {
         this.Box.fitBounds(bounds, {
-          padding: 45
+          padding: 30
         });
       } else {
         this.Box.flyTo({
-          center: coords[0]
+          center: coords[0],
+          zoom: 11
         });
       }
 
