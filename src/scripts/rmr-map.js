@@ -61,7 +61,7 @@
         const marker = document.createElement('div');
         marker.className = 'rmr-map-point';
         marker.setAttribute('rmr-map-index', i);
-        marker.setAttribute('title', 'hi');
+        marker.setAttribute('title', options.data[i].title);
         marker.addEventListener('click', e => {
           self.selectPoint(
             parseInt(e.target.getAttribute('rmr-map-index'), 10)
