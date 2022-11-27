@@ -53,6 +53,8 @@
   <div id="man">
     <h1><a href="https://github.com/davidfmiller/rmr-map">rmr-map</a></h1>
 
+    <a href="http://davidfmiller.github.io/rmr-map">On GitHub</a>
+
     <a href="https://www.mapbox.com">Mapbox</a>
 
     <fieldset>
@@ -60,6 +62,7 @@
        type="text"
        name="key"
        placeholder="mapbox key"
+
      >
      <select name="zoom" title="Zoom">
         <option value="1">1</option>
@@ -118,6 +121,7 @@
     let map = null;
 
     const
+    key = document.querySelector('input[name=key]'),
     init = document.querySelector('button.init'),
     zoomIn = document.querySelector('button.in'),
     zoomOut = document.querySelector('button.out'),
@@ -134,6 +138,11 @@
     });
 
     init.addEventListener('click', e => {
+
+      if (! key.value.trim()) {
+        alert('no key');
+        return;
+      }
 
       map = new RMRMap({
         element: '#mapbox',
