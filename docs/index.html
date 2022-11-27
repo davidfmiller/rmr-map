@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>rmr-map</title>
+
+  <link rel="stylesheet" type="text/css" href="./build/rmr-map.css">
+
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="mask-icon" href="favicon.svg" color="#d0021b">
+
+  <meta property="og:title" content="rmr-nav">
+  <meta property="og:description" content="rmr-map">
+  <meta property="og:email" content="davidfmiller@me.com">
+  <meta property="og:url" content="https://davidfmiller.github.io/rmr-map">
+  <meta property="fb:admins" content="eldaverino">
+  <meta property="og:image" content="./og-image.png">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    input[type=text] {
+      border-radius: 3px;
+      border: 1px solid #ddd;
+      padding: 5px;
+      flex-grow: 1;
+    }
+
+    body {
+      padding: 5px;
+    }
+
+    fieldset {
+      display: flex;
+      border: none;
+      padding: 0;
+      gap: 5px;
+      align-content: center;
+      align-items: center;
+    }
+
+    #mapbox {
+      width: 400px;
+      height: 400px;
+      background: blue;
+    }
+  </style>
+</head>
+<body>
+  <div id="man">
+    <h1><a href="https://github.com/davidfmiller/rmr-map">rmr-map</a></h1>
+
+    <a href="https://www.mapbox.com">Mapbox</a>
+
+    <fieldset>
+     <input
+       type="text"
+       name="key"
+       placeholder="mapbox key"
+     >
+     <select name="zoom" title="Zoom">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="11">11</option>
+     </select>
+
+     <select name="styles" title="Styles">
+        <option value="dark">Dark</option>
+        <option value="outdoors">Outdoors</option>
+        <option value="night">Night</option>
+     </select>
+
+     <button class="init">Init</button>
+    </fieldset>
+
+    <div class="map">
+
+      <div id="mapbox"></div>
+
+      <button class="in" disabled>+</button>
+      <button class="out" disabled>-</button>
+      <button class="center" disabled>Center</button>
+
+    </div>
+
+  </div>
+
+  <script src="https://davidfmiller.github.io/man/man.js"></script>
+  <script src="./build/rmr-map.bundle.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+
+    const data = [
+      {
+        "name": "The Bike Shop Central",
+        "url": "https://www.thebikeshop.com",
+        "location": {
+          "lat": 51.0154919,
+          "lon": -114.0430356
+        }
+      },
+      {
+        "name": "The Bike Shop North",
+        "url": "https://www.thebikeshop.com",
+        "location": {
+          "lat": 51.1526021,
+          "lon": -114.2108386
+        }
+      }
+    ];
+
+    window.Man({ pre: true });
+
+    let map = null;
+
+    const
+    init = document.querySelector('button.init'),
+    zoomIn = document.querySelector('button.in'),
+    zoomOut = document.querySelector('button.out'),
+    center = document.querySelector('button.center');
+
+    zoomIn.addEventListener('click', e => {
+      map.zoomIn();
+    });
+    zoomOut.addEventListener('click', e => {
+      map.zoomOut();
+    });
+    center.addEventListener('click', e => {
+      map.center();
+    });
+
+    init.addEventListener('click', e => {
+
+      map = new RMRMap({
+        element: '#mapbox',
+        key: document.querySelector('input[name=key]').value,
+        styles: document.querySelector('select[name=styles]').value,
+        zoom: parseInt(document.querySelector('select[name=zoom]'), 10),
+        data: data
+      });
+
+      map.Box.on('load', e => {
+        const
+          f = document.querySelector('fieldset'),
+          inputs = Array.from(f.querySelectorAll('input,select'));
+
+        inputs.forEach(i => {
+          i.setAttribute('disabled', true);
+        });
+
+        init.setAttribute('disabled', true);
+        zoomIn.removeAttribute('disabled');
+        zoomOut.removeAttribute('disabled');
+        center.removeAttribute('disabled');
+      });
+    });
+  });
+  </script>
+
+</html>
