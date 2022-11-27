@@ -54,11 +54,9 @@
 </head>
 <body>
   <div id="man">
-    <h1><a href="https://github.com/davidfmiller/rmr-map">rmr-map</a></h1>
+    <h1><a href="https://github.com/davidfmiller/rmr-map" target="_blank">rmr-map</a></h1>
 
-    <a href="http://davidfmiller.github.io/rmr-map">On GitHub</a>
-
-    <a href="https://www.mapbox.com">Mapbox</a>
+    <a href="https://www.mapbox.com" target="_blank">Mapbox</a>
 
     <fieldset>
      <input
@@ -67,6 +65,7 @@
        placeholder="mapbox key"
 
      >
+
      <select name="zoom" title="Zoom">
         <option value="1">1</option>
         <option value="2">2</option>
@@ -89,6 +88,7 @@
 
       <button class="in" disabled>+</button>
       <button class="out" disabled>-</button>
+      <button class="local" disabled>Local</button>
       <button class="center" disabled>Center</button>
 
     </div>
@@ -159,7 +159,6 @@
       },
       {
         "title": "Specialized Bukit Pasoh",
-//        "url": "https://all4bikers.cl",
         "location": {
           "lat": 1.27867,
           "lon": 103.84069
@@ -177,7 +176,14 @@
     init = document.querySelector('button.init'),
     zoomIn = document.querySelector('button.in'),
     zoomOut = document.querySelector('button.out'),
+    local = document.querySelector('button.local'),
     center = document.querySelector('button.center');
+
+    local.addEventListener('click', e => {
+      navigator.geolocation.getCurrentPosition(location => {
+        map.zoomTo(location.coords.latitude, location.coords.longitude);
+      });
+    });
 
     zoomIn.addEventListener('click', e => {
       map.zoomIn();
@@ -221,6 +227,7 @@
         });
 
         init.setAttribute('disabled', true);
+        local.removeAttribute('disabled');
         zoomIn.removeAttribute('disabled');
         zoomOut.removeAttribute('disabled');
         center.removeAttribute('disabled');

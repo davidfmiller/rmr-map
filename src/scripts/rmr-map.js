@@ -74,7 +74,6 @@
           );
         });
 
-
         const m = new Mapbox.Marker({
           element: marker,
           offset: [0, 0],
@@ -138,15 +137,23 @@
       }
     };
 
-    this.zoomIn = () => {
+    this.zoomTo = function(lat, lon) {
+
+      this.Box.flyTo({
+        center: [lon, lat],
+        zoom: 11
+      });
+    };
+
+    this.zoomIn = function() {
       this.Box.zoomIn();
     };
 
-    this.zoomOut = () => {
+    this.zoomOut = function() {
       this.Box.zoomOut();
     };
 
-    this.center = () => {
+    this.center = function() {
 
       if (options.pins.length > 1) {
         this.Box.fitBounds(bounds, {
