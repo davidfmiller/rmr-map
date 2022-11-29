@@ -8,7 +8,7 @@
   const
   Mapbox = require('mapbox-gl/dist/mapbox-gl.js'),
   RMR = require('rmr-util'),
-  Popover = require('../../node_modules/rmr-popover/src/scripts/rmr-popover.js');
+  Popover = require('rmr-popover');
 
   const
   styles = {
