@@ -68,6 +68,13 @@
 
       if (options.route) {
 
+        if (! options.line) {
+          options.line = {
+            'line-color': '#0572f8',
+            'line-width': 5
+          };
+        }
+
         self.Box.addSource(
           'route',
           {
@@ -91,10 +98,7 @@
             'line-join': 'round',
             'line-cap': 'round'
           },
-          paint: {
-            'line-color': 'gold', //'#0a84ff',
-            'line-width': 5
-          }
+          paint: options.line
         });
 
         const e = document.createElement('div');
