@@ -58,7 +58,6 @@
       container: element,
       style: styles[options.styles],
       center: bounds.getCenter(),
-      zoom: options.zoom ? options.zoom : 11
     });
 
 
@@ -113,6 +112,8 @@
         return;
       }
 
+      // pins
+
       let i = 0;
       for (const c of coords) {
         const marker = document.createElement('div');
@@ -124,9 +125,9 @@
         marker.setAttribute('title', p.title);
         marker.setAttribute('data-popover', p.title);
         marker.addEventListener('click', e => {
-          self.selectPin(
+          self.selectPoint(
             parseInt(e.target.getAttribute('rmr-map-index'), 10),
-            true
+            11
           );
         });
 
@@ -145,7 +146,7 @@
         m.addTo(self.Box);
         i++;
       }
-
+      self.center();
       const popover = new Popover({
           root : element,
           delay: { pop: 200, unpop: 0 }
@@ -179,7 +180,7 @@
         if (center) {
           this.Box.flyTo({
             center: coords[index],
-            zoom: 11,
+            zoom: center,
             speed: 3,
             curve: 1,
             easing(t) {

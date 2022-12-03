@@ -34,7 +34,6 @@
        type="text"
        name="key"
        placeholder="mapbox key"
-value="pk.eyJ1IjoiZGZtbGxjIiwiYSI6ImNsYXgwY3QxMDAxN2wzbmxtazBpY3kzbzAifQ.a-KuJcI-XSOEoEQzBT2-8g"
      >
 
      <select name="zoom" title="Zoom">
@@ -57,7 +56,7 @@ value="pk.eyJ1IjoiZGZtbGxjIiwiYSI6ImNsYXgwY3QxMDAxN2wzbmxtazBpY3kzbzAifQ.a-KuJcI
       <div>
         <div id="mapbox"></div>
       </div>
-      <div class="display: flex;">
+      <div class="controls">
         <button class="in" disabled>+</button>
         <button class="out" disabled>-</button>
         <button class="local" disabled>Local</button>
@@ -187,14 +186,13 @@ value="pk.eyJ1IjoiZGZtbGxjIiwiYSI6ImNsYXgwY3QxMDAxN2wzbmxtazBpY3kzbzAifQ.a-KuJcI
         select.appendChild(option);
         select.addEventListener('change', e => {
           if (select.selectedIndex > 0 ) {
-            console.log(select.selectedIndex);
             map.selectPoint(select.selectedIndex - 1, true);
           }
         });
 
         data.forEach(d => {
           const option = document.createElement('option');
-          option.innerHTML = i + 1;
+          option.innerHTML = `Point #${i + 1}`
           option.value = i + 1;
           select.appendChild(
             option

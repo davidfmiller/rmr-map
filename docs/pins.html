@@ -34,7 +34,6 @@
        type="text"
        name="key"
        placeholder="mapbox key"
-value="pk.eyJ1IjoiZGZtbGxjIiwiYSI6ImNsYXgwY3QxMDAxN2wzbmxtazBpY3kzbzAifQ.a-KuJcI-XSOEoEQzBT2-8g"
      >
 
      <select name="zoom" title="Zoom">
@@ -200,7 +199,7 @@ value="pk.eyJ1IjoiZGZtbGxjIiwiYSI6ImNsYXgwY3QxMDAxN2wzbmxtazBpY3kzbzAifQ.a-KuJcI
 
         option = document.createElement('option');
         option.value = 0;
-        option.innerHTML = 'Choose a dealer';
+        option.innerHTML = 'Choose a pin';
         select.appendChild(option);
         select.addEventListener('change', e => {
           console.log(select.selectedIndex);
