@@ -1,0 +1,34 @@
+body {
+  font-family: system-ui, sans-serif;
+}
+input[type=text] {
+  border-radius: 3px;
+  border: 1px solid #ddd;
+  padding: 5px;
+  flex-grow: 1;
+}
+
+body {
+  padding: 5px;
+}
+
+fieldset {
+  display: flex;
+  border: none;
+  padding: 0;
+  gap: 5px;
+  align-content: center;
+  align-items: center;
+}
+.map > div:first-child {
+  background: black;
+}
+#mapbox {
+  width: 100%;
+  height: 500px;
+}
+
+div.controls {
+  display: flex;
+  gap: 10px;
+}

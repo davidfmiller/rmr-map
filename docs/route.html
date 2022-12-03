@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>rmr-map</title>
+
+  <link rel="stylesheet" type="text/css" href="./build/rmr-map.css">
+  <link rel="stylesheet" type="text/css" href="index.css">
+
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="mask-icon" href="favicon.svg" color="#d0021b">
+
+  <meta property="og:title" content="rmr-nav">
+  <meta property="og:description" content="rmr-map">
+  <meta property="og:email" content="davidfmiller@me.com">
+  <meta property="og:url" content="https://davidfmiller.github.io/rmr-map">
+  <meta property="fb:admins" content="eldaverino">
+  <meta property="og:image" content="./og-image.png">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <div id="man">
+    <h1>
+      <a href="index.html">rmr-map</a> : route
+    </h1>
+
+    <fieldset>
+     <input
+       type="text"
+       name="key"
+       placeholder="mapbox key"
+value="pk.eyJ1IjoiZGZtbGxjIiwiYSI6ImNsYXgwY3QxMDAxN2wzbmxtazBpY3kzbzAifQ.a-KuJcI-XSOEoEQzBT2-8g"
+     >
+
+     <select name="zoom" title="Zoom">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="11">11</option>
+     </select>
+
+     <select name="styles" title="Styles">
+        <option value="dark">Dark</option>
+        <option value="outdoors">Outdoors</option>
+        <option value="night">Night</option>
+     </select>
+
+     <button class="init">Init</button>
+    </fieldset>
+
+    <div class="map">
+      <div>
+        <div id="mapbox"></div>
+      </div>
+      <div class="display: flex;">
+        <button class="in" disabled>+</button>
+        <button class="out" disabled>-</button>
+        <button class="local" disabled>Local</button>
+        <button class="center" disabled>Center</button>
+        <select name="index" title="Index"></select>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://davidfmiller.github.io/man/man.js"></script>
+  <script src="./build/rmr-map.bundle.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+
+    const data = [
+        {
+          "location": {
+            "lon": -119.264801,
+            "lat": 50.230942
+          },
+          "ele": 401
+        },
+        {
+          "location": {
+            "lon": -119.265991,
+            "lat": 50.2314
+          },
+          "ele": 400
+        },
+        {
+          "location": {
+            "lon": -119.267189,
+            "lat": 50.231861,
+          },
+          "ele": 401
+        },
+        {
+          "location": {
+            "lon": -119.267921,
+            "lat": 50.232121
+          },
+          "ele": 400
+        },
+        {
+          "location": {
+            "lon": -119.268051,
+            "lat": 50.232201
+          },
+          "ele": 400
+        },
+        {
+          "location": {
+            "lon": -119.268219,
+            "lat": 50.232441
+          },
+          "ele": 399
+        },
+        {
+          "location": {
+            "lon": -119.268188,
+            "lat": 50.232571
+          },
+           "ele": 399
+        }
+    ];
+
+    window.Man({ pre: true });
+
+    let
+    map = null,
+    i = 0,
+    option = null;
+
+    const
+    key = document.querySelector('input[name=key]'),
+    init = document.querySelector('button.init'),
+    zoomIn = document.querySelector('button.in'),
+    zoomOut = document.querySelector('button.out'),
+    local = document.querySelector('button.local'),
+    center = document.querySelector('button.center'),
+    select = document.querySelector('select[name=index]');
+
+    local.addEventListener('click', e => {
+      navigator.geolocation.getCurrentPosition(location => {
+        map.zoomTo(location.coords.latitude, location.coords.longitude);
+      });
+    });
+
+    zoomIn.addEventListener('click', e => {
+      map.zoomIn();
+    });
+    zoomOut.addEventListener('click', e => {
+      map.zoomOut();
+    });
+    center.addEventListener('click', e => {
+      map.center();
+    });
+
+    init.addEventListener('click', e => {
+
+      if (! key.value.trim()) {
+        alert('no key');
+        return;
+      }
+
+      map = new RMRMap({
+        element: '#mapbox',
+        key: document.querySelector('input[name=key]').value,
+        styles: document.querySelector('select[name=styles]').value,
+        zoom: parseInt(document.querySelector('select[name=zoom]').value, 10),
+        route: data,
+//         popup: index => {
+//           const p = data[index];
+//           return `<a href="${p.url}" target="_blank" title="${p.title}">${p.title}</a>`
+//         },
+        onSelect: index => {
+          console.log('selected', index);
+        }
+      });
+
+      map.Box.on('load', e => {
+
+        option = document.createElement('option');
+        option.value = 0;
+        option.innerHTML = 'Choose a point';
+        select.appendChild(option);
+        select.addEventListener('change', e => {
+          if (select.selectedIndex > 0 ) {
+            console.log(select.selectedIndex);
+            map.selectPoint(select.selectedIndex - 1, true);
+          }
+        });
+
+        data.forEach(d => {
+          const option = document.createElement('option');
+          option.innerHTML = i + 1;
+          option.value = i + 1;
+          select.appendChild(
+            option
+          );
+          i++;
+        });
+
+        const
+          f = document.querySelector('fieldset'),
+          inputs = Array.from(f.querySelectorAll('input,select'));
+
+        inputs.forEach(i => {
+          i.setAttribute('disabled', true);
+        });
+
+        init.setAttribute('disabled', true);
+        local.removeAttribute('disabled');
+        zoomIn.removeAttribute('disabled');
+        zoomOut.removeAttribute('disabled');
+        center.removeAttribute('disabled');
+      });
+    });
+  });
+  </script>
+
+</html>

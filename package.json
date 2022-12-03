@@ -1,6 +1,6 @@
 {
   "name": "rmr-map",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Mappy",
   "url": "https://davidfmiller.github.io/rmr-map/",
   "license": "ISC",
@@ -37,6 +37,6 @@
   "dependencies": {
     "mapbox-gl": "^2.4.0",
     "rmr-popover": "^0.4.4",
-    "rmr-util": "^1.1.132"
+    "rmr-util": "^1.1.133"
   }
 }

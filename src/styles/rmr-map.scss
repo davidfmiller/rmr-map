@@ -20,6 +20,14 @@
   }
 }
 
+#mapbox {
+  opacity: 0;
+  transition: $rmr-transition-duration-short;
+  &.rmr-load {
+    opacity: 1;
+  }
+}
+
 div.rmr-popover {
   font-size: 10px;
 }

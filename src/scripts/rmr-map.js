@@ -10,6 +10,8 @@
   RMR = require('rmr-util'),
   Popover = require('rmr-popover');
 
+  let coords = [], bounds = null;
+
   const
   styles = {
     dark: 'mapbox://styles/mapbox/dark-v10',
@@ -18,6 +20,8 @@
   };
 
   const RMRMap = function(options) {
+
+    this.marker = null;
 
     const element = document.querySelector(options.element);
     if (! element) {
@@ -30,8 +34,23 @@
       return;
     }
 
+    if (! options.pins && ! options.route) {
+      console.error('No data provided');
+      return;
+    }
+
     if (! options.styles) {
       options.styles = 'outdoors';
+    }
+
+    coords = options.pins ? options.pins.map(p => { return [p.location.lon, p.location.lat]; }) : options.route.map(p => { return [p.location.lon, p.location.lat]; });
+    bounds = new Mapbox.LngLatBounds(
+      coords[0],
+      coords[0]
+    );
+
+    for (const c of coords) {
+      bounds.extend(c);
     }
 
     Mapbox.accessToken = options.key;
@@ -42,23 +61,60 @@
       zoom: options.zoom ? options.zoom : 11
     });
 
-    const
-    coords = options.pins.map(p => { return [p.location.lon, p.location.lat]; }),
-    bounds = new Mapbox.LngLatBounds(
-      coords[0],
-      coords[0]
-    );
-
-    for (const c of coords) {
-      bounds.extend(c);
-    }
 
     const self = this;
     this.Box.on('load', () => {
 
+      element.classList.add('rmr-load');
+
+      if (options.route) {
+
+        self.Box.addSource(
+          'route',
+          {
+            type: 'geojson',
+            data: {
+              type: 'Feature',
+              properties: {},
+              geometry: {
+                type: 'LineString',
+                coordinates: coords
+              }
+            }
+          }
+        );
+
+        self.Box.addLayer({
+          id: 'route',
+          type: 'line',
+          source: 'route',
+          layout: {
+            'line-join': 'round',
+            'line-cap': 'round'
+          },
+          paint: {
+            'line-color': 'gold', //'#0a84ff',
+            'line-width': 5
+          }
+        });
+
+        const e = document.createElement('div');
+        e.className = 'rmr-map-point';
+        e.setAttribute('rmr-map-index', 0);
+
+        this.marker = new Mapbox.Marker({
+          element: e,
+          offset: [0, -15],
+        }).setLngLat(coords[0]);
+
+        this.marker.addTo(self.Box);
+        self.center(false);
+
+        return;
+      }
+
       let i = 0;
       for (const c of coords) {
-
         const marker = document.createElement('div');
         marker.className = 'rmr-map-point';
         marker.setAttribute('rmr-map-index', i);
@@ -91,53 +147,46 @@
       }
 
       const popover = new Popover({
-        root : element,
-        debug: false,
-        position: 'side',
-        delay: {
-          pop: 200,
-          unpop: 0
-        }
-//         factory : function(node) {
-//           console.log(node);
-//           return { 'content' : node.getAttribute('rmr-map-index') };
-//         }
-      },
-      {
-
-      });
-
-//      self.center();
-
-      self.Box.on('drag', () => {
-        // mark as dirty
-      });
+          root : element,
+          delay: { pop: 200, unpop: 0 }
+        },
+        { position: 'side' }
+      );
     });
 
     /**
       @param index {int} : 0-based index of pin to be selected
       @param @optional center {bool} : if true map will center on selected pin
       */
-    this.selectPin = function(index, center) {
-      const markers = element.querySelectorAll('.rmr-map-point');
-      markers.forEach(m => {
-        if (m.getAttribute('rmr-map-index') == index) {
-          m.classList.add('rmr-selected');
-        } else {
-          m.classList.remove('rmr-selected');
-        }
-      });
+    this.selectPoint = function(index, center) {
 
-      if (center) {
-        this.Box.flyTo({
-          center: coords[index],
-          zoom: 11,
-          speed: 3,
-          curve: 1,
-          easing(t) {
-            return t;
+      if (options.route) {
+
+        console.log('selecting', this, this.marker, coords[index]);
+        this.marker.setLngLat(coords[index]);
+
+      } else {
+
+      const markers = element.querySelectorAll('.rmr-map-point');
+        markers.forEach(m => {
+          if (m.getAttribute('rmr-map-index') == index) {
+            m.classList.add('rmr-selected');
+          } else {
+            m.classList.remove('rmr-selected');
           }
         });
+
+        if (center) {
+          this.Box.flyTo({
+            center: coords[index],
+            zoom: 11,
+            speed: 3,
+            curve: 1,
+            easing(t) {
+              return t;
+            }
+          });
+        }
       }
 
       if (options.onSelect) {
@@ -161,17 +210,23 @@
       this.Box.zoomOut();
     };
 
-    this.center = function() {
-
-      if (options.pins.length > 1) {
-        this.Box.fitBounds(bounds, {
-          padding: 30
-        });
+    /**
+     * @param @optional animated {bool} -
+     */
+    this.center = function(animated) {
+      if (coords.length > 1) {
+          this.Box.fitBounds(bounds, {
+            padding: 30,
+            animate: animated
+          });
       } else {
-        this.Box.flyTo({
-          center: coords[0],
-          zoom: 11
-        });
+        if (animated) {
+          this.Box.flyTo({
+            center: coords[0],
+            zoom: 11
+          },
+          { animate: animated });
+        }
       }
 
     };
