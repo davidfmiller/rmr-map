@@ -34,6 +34,14 @@
       options.styles = 'outdoors';
     }
 
+    Mapbox.accessToken = options.key;
+    this.Box = new Mapbox.Map({
+      container: element,
+      style: styles[options.styles],
+      center: bounds.getCenter(),
+      zoom: options.zoom ? options.zoom : 11
+    });
+
     const
     coords = options.pins.map(p => { return [p.location.lon, p.location.lat]; }),
     bounds = new Mapbox.LngLatBounds(
@@ -44,14 +52,6 @@
     for (const c of coords) {
       bounds.extend(c);
     }
-
-    Mapbox.accessToken = options.key;
-    this.Box = new Mapbox.Map({
-      container: element,
-      style: styles[options.styles],
-      center: bounds.getCenter(),
-      zoom: options.zoom ? options.zoom : 11
-    });
 
     const self = this;
     this.Box.on('load', () => {
@@ -93,6 +93,7 @@
       const popover = new Popover({
         root : element,
         debug: false,
+        position: 'side',
         delay: {
           pop: 200,
           unpop: 0
@@ -101,6 +102,9 @@
 //           console.log(node);
 //           return { 'content' : node.getAttribute('rmr-map-index') };
 //         }
+      },
+      {
+
       });
 
 //      self.center();
@@ -110,6 +114,10 @@
       });
     });
 
+    /**
+      @param index {int} : 0-based index of pin to be selected
+      @param @optional center {bool} : if true map will center on selected pin
+      */
     this.selectPin = function(index, center) {
       const markers = element.querySelectorAll('.rmr-map-point');
       markers.forEach(m => {

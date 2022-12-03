@@ -63,7 +63,7 @@
        type="text"
        name="key"
        placeholder="mapbox key"
-
+value="pk.eyJ1IjoiZGZtbGxjIiwiYSI6ImNsYXgwY3QxMDAxN2wzbmxtazBpY3kzbzAifQ.a-KuJcI-XSOEoEQzBT2-8g"
      >
 
      <select name="zoom" title="Zoom">
@@ -83,14 +83,16 @@
     </fieldset>
 
     <div class="map">
-
       <div id="mapbox"></div>
+      <div class="display: flex;">
+        <button class="in" disabled>+</button>
+        <button class="out" disabled>-</button>
+        <button class="local" disabled>Local</button>
+        <button class="center" disabled>Center</button>
+        <select name="index">
 
-      <button class="in" disabled>+</button>
-      <button class="out" disabled>-</button>
-      <button class="local" disabled>Local</button>
-      <button class="center" disabled>Center</button>
-
+        </select>
+      </div>
     </div>
 
   </div>
@@ -164,12 +166,14 @@
           "lon": 103.84069
         }
       }
-
     ];
 
     window.Man({ pre: true });
 
-    let map = null;
+    let
+    map = null,
+    i = 0,
+    option = null;
 
     const
     key = document.querySelector('input[name=key]'),
@@ -177,6 +181,7 @@
     zoomIn = document.querySelector('button.in'),
     zoomOut = document.querySelector('button.out'),
     local = document.querySelector('button.local'),
+    select = document.querySelector('select[name=index]'),
     center = document.querySelector('button.center');
 
     local.addEventListener('click', e => {
@@ -212,12 +217,35 @@
           const p = data[index];
           return `<a href="${p.url}" target="_blank" title="${p.title}">${p.title}</a>`
         },
-        onSelect: index => { 
+        onSelect: index => {
           console.log('selected', index);
+          select.selectedIndex = index + 1;
         }
       });
 
       map.Box.on('load', e => {
+
+        option = document.createElement('option');
+        option.value = 0;
+        option.innerHTML = 'Choose a dealer';
+        select.appendChild(option);
+        select.addEventListener('change', e => {
+          console.log(select.selectedIndex);
+          if (select.selectedIndex > 0 ) {
+            map.selectPin(select.selectedIndex - 1, true);
+          }
+        });
+
+        data.forEach(d => {
+          const option = document.createElement('option');
+          option.innerHTML = d.title;
+          option.value = i + 1;
+          select.appendChild(
+            option
+          );
+          i++;
+        });
+
         const
           f = document.querySelector('fieldset'),
           inputs = Array.from(f.querySelectorAll('input,select'));
