@@ -192,16 +192,19 @@
         element: '#mapbox',
         key: document.querySelector('input[name=key]').value,
         styles: document.querySelector('select[name=styles]').value,
-        zoom: parseInt(document.querySelector('select[name=zoom]').value, 10),
+//        zoom: parseInt(document.querySelector('select[name=zoom]').value, 10),
         interactive: true,
         pins: data,
         popup: index => {
           const p = data[index];
-          return `<a href="${p.url}" target="_blank" title="${p.title}">${p.title}</a>`
+          if (p.url) {
+            return `<a href="${p.url}" target="_blank" title="${p.title}">${p.title}</a>`
+          }
+          return `${p.title}`;
         },
         onSelect: index => {
           console.log('selected', index);
-          select.selectedIndex = index + 1;
+//          select.selectedIndex = index + 1;
         }
       });
 

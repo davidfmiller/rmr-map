@@ -23,9 +23,14 @@
 
     this.marker = null;
 
-    const element = document.querySelector(options.element);
+    const element = RMR.Node.get(options.element);
     if (! element) {
       console.error('No Mapbox container provided', element);
+      return;
+    }
+
+    if (! options.key) {
+      console.error('No Mapbox key provided');
       return;
     }
 
@@ -33,9 +38,8 @@
       options.interactive = true;
     }
 
-    if (! options.key) {
-      console.error('No Mapbox key provided');
-      return;
+    if (options.interactive) {
+      element.classList.add('rmr-interactive');
     }
 
     if (! options.pins && ! options.route) {
@@ -66,13 +70,13 @@
       interactive: !options.hasOwnProperty('interactive') || options.interactive ? true : false
     };
 
-    if (coords.length == 1 && ! options.zoom) {
-      args.zoom = 11;
-    } else if (options.zoom) {
+    if (options.zoom) {
       args.zoom = options.zoom;
     }
 
     this.Box = new Mapbox.Map(args);
+
+    element.classList.add('rmr-map');
 
     const self = this;
     this.Box.on('load', () => {
@@ -151,7 +155,6 @@
           );
         });
 
-
         m = new Mapbox.Marker({
           element: marker,
           offset: [0, 0],
@@ -163,15 +166,9 @@
             closeOnClick: true
           };
 
-//           if (options.pins && options.pins.length == 1) {
-//             popupArgs.closeOnClick = false;
-//           }
-
-          const popup = new Mapbox.Popup(popupArgs).setHTML(
+          m.setPopup(new Mapbox.Popup(popupArgs).setHTML(
             options.popup(i)
-          );
-
-          m.setPopup(popup);
+          ));
         }
 
         m.addTo(self.Box);
@@ -237,12 +234,17 @@
       } else {
         loc = coords[arguments[0]];
       }
+      console.log(loc);
 
-      this.Box.flyTo({
-        center: loc,
-        zoom: options.zoom
-      });
-      
+      const args = {
+        center: loc
+      }
+
+      if (options.zoom) {
+        args.zoom = options.zoom;
+      }
+
+      this.Box.flyTo(args);
     };
 
     this.zoomIn = function() {
@@ -266,7 +268,7 @@
         if (animated) {
           this.Box.flyTo({
             center: coords[0],
-            zoom: 11
+            zoom: options.zoom
           },
           { animate: animated });
         }
