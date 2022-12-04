@@ -134,7 +134,7 @@
       let
       i = 0,
       m = null;
-      
+
       for (const c of coords) {
         const marker = document.createElement('div');
         marker.className = 'rmr-map-point';
@@ -147,9 +147,10 @@
         marker.addEventListener('click', e => {
           self.selectPoint(
             parseInt(e.target.getAttribute('rmr-map-index'), 10),
-            11
+            options.popup ? 11: 0
           );
         });
+
 
         m = new Mapbox.Marker({
           element: marker,
@@ -162,9 +163,9 @@
             closeOnClick: true
           };
 
-          if (options.pins && options.pins.length == 1) {
-            popupArgs.closeOnClick = false;
-          }
+//           if (options.pins && options.pins.length == 1) {
+//             popupArgs.closeOnClick = false;
+//           }
 
           const popup = new Mapbox.Popup(popupArgs).setHTML(
             options.popup(i)
@@ -188,23 +189,20 @@
         self.selectPoint(0);
       }
 
-
-      self.center();
+      self.center(false);
     });
 
     /**
       @param index {int} : 0-based index of pin to be selected
       @param @optional center {bool} : if true map will center on selected pin
       */
-    this.selectPoint = function(index, center, internal) {
+    this.selectPoint = function(index, center) {
 
       if (options.route) {
-
         this.marker.setLngLat(coords[index]);
-
       } else {
 
-      const markers = element.querySelectorAll('.rmr-map-point');
+        const markers = element.querySelectorAll('.rmr-map-point');
         markers.forEach(m => {
           if (m.getAttribute('rmr-map-index') == index) {
             m.classList.add('rmr-selected');
@@ -233,10 +231,18 @@
 
     this.zoomTo = function(lat, lon) {
 
+      let loc = null;
+      if (arguments.length == 2) {
+        loc = [lon, lat];
+      } else {
+        loc = coords[arguments[0]];
+      }
+
       this.Box.flyTo({
-        center: [lon, lat],
-        zoom: 11
+        center: loc,
+        zoom: options.zoom
       });
+      
     };
 
     this.zoomIn = function() {
