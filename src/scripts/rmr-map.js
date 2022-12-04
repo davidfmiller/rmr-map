@@ -29,6 +29,10 @@
       return;
     }
 
+    if (! options.hasOwnProperty('interactive')) {
+      options.interactive = true;
+    }
+
     if (! options.key) {
       console.error('No Mapbox key provided');
       return;
@@ -54,12 +58,21 @@
     }
 
     Mapbox.accessToken = options.key;
-    this.Box = new Mapbox.Map({
+
+    const args = {
       container: element,
       style: styles[options.styles],
       center: bounds.getCenter(),
-    });
+      interactive: !options.hasOwnProperty('interactive') || options.interactive ? true : false
+    };
 
+    if (coords.length == 1 && ! options.zoom) {
+      args.zoom = 11;
+    } else if (options.zoom) {
+      args.zoom = options.zoom;
+    }
+
+    this.Box = new Mapbox.Map(args);
 
     const self = this;
     this.Box.on('load', () => {
@@ -118,7 +131,10 @@
 
       // pins
 
-      let i = 0;
+      let
+      i = 0,
+      m = null;
+      
       for (const c of coords) {
         const marker = document.createElement('div');
         marker.className = 'rmr-map-point';
@@ -135,39 +151,55 @@
           );
         });
 
-        const m = new Mapbox.Marker({
+        m = new Mapbox.Marker({
           element: marker,
           offset: [0, 0],
         }).setLngLat(c)
 
         if (options.popup) {
-          const popup = new Mapbox.Popup({ offset: 15 }).setHTML(
+          const popupArgs = {
+            offset: 15,
+            closeOnClick: true
+          };
+
+          if (options.pins && options.pins.length == 1) {
+            popupArgs.closeOnClick = false;
+          }
+
+          const popup = new Mapbox.Popup(popupArgs).setHTML(
             options.popup(i)
           );
+
           m.setPopup(popup);
         }
 
         m.addTo(self.Box);
         i++;
       }
+
+      if (options.pins.length > 1) {
+        const popover = new Popover({
+            root : element,
+            delay: { pop: 200, unpop: 0 }
+          },
+          { position: 'side' }
+        );
+      } else {
+        self.selectPoint(0);
+      }
+
+
       self.center();
-      const popover = new Popover({
-          root : element,
-          delay: { pop: 200, unpop: 0 }
-        },
-        { position: 'side' }
-      );
     });
 
     /**
       @param index {int} : 0-based index of pin to be selected
       @param @optional center {bool} : if true map will center on selected pin
       */
-    this.selectPoint = function(index, center) {
+    this.selectPoint = function(index, center, internal) {
 
       if (options.route) {
 
-        console.log('selecting', this, this.marker, coords[index]);
         this.marker.setLngLat(coords[index]);
 
       } else {

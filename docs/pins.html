@@ -34,6 +34,7 @@
        type="text"
        name="key"
        placeholder="mapbox key"
+       value="pk.eyJ1IjoiZGZtbGxjIiwiYSI6ImNsYXgwY3QxMDAxN2wzbmxtazBpY3kzbzAifQ.a-KuJcI-XSOEoEQzBT2-8g"
      >
 
      <select name="zoom" title="Zoom">
@@ -143,7 +144,6 @@
     window.Man({ pre: true });
 
     let
-    map = null,
     i = 0,
     option = null;
 
@@ -179,11 +179,12 @@
         return;
       }
 
-      map = new RMRMap({
+      window.RMap = new RMRMap({
         element: '#mapbox',
         key: document.querySelector('input[name=key]').value,
         styles: document.querySelector('select[name=styles]').value,
         zoom: parseInt(document.querySelector('select[name=zoom]').value, 10),
+        interactive: true,
         pins: data,
         popup: index => {
           const p = data[index];
@@ -195,7 +196,7 @@
         }
       });
 
-      map.Box.on('load', e => {
+      RMap.Box.on('load', e => {
 
         option = document.createElement('option');
         option.value = 0;
@@ -204,7 +205,7 @@
         select.addEventListener('change', e => {
           console.log(select.selectedIndex);
           if (select.selectedIndex > 0 ) {
-            map.selectPoint(select.selectedIndex - 1, true);
+            window.RMap.selectPoint(select.selectedIndex - 1, 11);
           }
         });
 
