@@ -151,7 +151,7 @@
         marker.addEventListener('click', e => {
           self.selectPoint(
             parseInt(e.target.getAttribute('rmr-map-index'), 10),
-            options.popup ? 11: 0
+            options.zoom ? options.zoom: 0
           );
         });
 
@@ -256,6 +256,8 @@
     };
 
     /**
+     * Center map around all locations
+     * 
      * @param @optional animated {bool} -
      */
     this.center = function(animated) {
