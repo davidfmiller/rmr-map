@@ -6,7 +6,8 @@
 
 .rmr-map-point {
   // pin-white
-  background-image: url('../assets/pin.svg');
+//  background-image: url('../assets/pin.svg');
+  background-image: url('https://raw.githubusercontent.com/davidfmiller/rmr-map/main/docs/assets/pin.svg');
 
   background-size: 100% 100%;
   width: 30px;
@@ -17,7 +18,8 @@
 
   &.rmr-selected {
     // pin-red
-    background-image: url('../assets/pin-selected.svg');
+//    background-image: url('../assets/pin-selected.svg');
+    background-image: url('https://raw.githubusercontent.com/davidfmiller/rmr-map/main/docs/assets/pin-selected.svg');
   }
 }
 
