@@ -6,9 +6,7 @@
   'use strict';
 
   const
-  Mapbox = require('mapbox-gl/dist/mapbox-gl.js'),
-  RMR = require('rmr-util'),
-  Popover = require('rmr-popover');
+  Mapbox = require('mapbox-gl/dist/mapbox-gl.js');
 
   let coords = [], bounds = null;
 
@@ -23,7 +21,7 @@
 
     this.marker = null;
 
-    const element = RMR.Node.get(options.element);
+    const element = typeof options.element === "string" ? document.querySelector(options.element) : options.element;
     if (! element) {
       console.error('No Mapbox container provided', element);
       return;
@@ -175,14 +173,7 @@
         i++;
       }
 
-      if (options.pins.length > 1) {
-        const popover = new Popover({
-            root : element,
-            delay: { pop: 200, unpop: 0 }
-          },
-          { position: 'side' }
-        );
-      } else {
+      if (options.pins.length === 0) {
         self.selectPoint(0);
       }
 
@@ -195,6 +186,9 @@
       */
     this.selectPoint = function(index, center) {
 
+
+      let marker = null;
+
       if (options.route) {
         this.marker.setLngLat(coords[index]);
       } else {
@@ -203,6 +197,7 @@
         markers.forEach(m => {
           if (m.getAttribute('rmr-map-index') == index) {
             m.classList.add('rmr-selected');
+            marker = m;
           } else {
             m.classList.remove('rmr-selected');
           }
@@ -222,7 +217,7 @@
       }
 
       if (options.onSelect) {
-        options.onSelect(index);
+        options.onSelect(index, marker);
       }
     };
 
@@ -234,7 +229,6 @@
       } else {
         loc = coords[arguments[0]];
       }
-      console.log(loc);
 
       const args = {
         center: loc

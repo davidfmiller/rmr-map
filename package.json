@@ -1,7 +1,7 @@
 {
   "name": "rmr-map",
-  "version": "0.0.9",
-  "description": "Mappy",
+  "version": "0.0.10",
+  "description": "Mappy mappy mappy",
   "url": "https://davidfmiller.github.io/rmr-map/",
   "license": "ISC",
   "author": {
@@ -35,8 +35,6 @@
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
-    "mapbox-gl": "^2.4.0",
-    "rmr-popover": "^0.4.4",
-    "rmr-util": "^1.1.133"
+    "mapbox-gl": "^2.4.0"
   }
 }

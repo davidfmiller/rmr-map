@@ -202,9 +202,8 @@
           }
           return `${p.title}`;
         },
-        onSelect: index => {
-          console.log('selected', index);
-//          select.selectedIndex = index + 1;
+        onSelect: (index, marker) => {
+          console.log('selected', index, marker);
         }
       });
 

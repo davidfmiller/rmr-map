@@ -68,7 +68,9 @@
   </div>
 
   <script src="https://davidfmiller.github.io/man/man.js"></script>
+  <script src="./assets/rmr-popover.js"></script>
   <script src="./build/rmr-map.bundle.js"></script>
+
   <script>
   document.addEventListener('DOMContentLoaded', () => {
 
@@ -169,10 +171,12 @@
         styles: document.querySelector('select[name=styles]').value,
         zoom: parseInt(document.querySelector('select[name=zoom]').value, 10),
         route: data,
-//         popup: index => {
-//           const p = data[index];
-//           return `<a href="${p.url}" target="_blank" title="${p.title}">${p.title}</a>`
-//         },
+        interactive: true,
+        popup: (index, marker) => {
+          const p = data[index];
+          console.log(index, marker);
+          return `<a href="${p.url}" target="_blank" title="${p.title}">${p.title}</a>`
+        },
         onSelect: index => {
           console.log('selected', index);
         }
