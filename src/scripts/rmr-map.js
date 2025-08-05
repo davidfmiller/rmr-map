@@ -261,15 +261,16 @@
             animate: animated
           });
       } else {
-        if (animated) {
-          this.Box.flyTo({
+        this.Box.flyTo(
+          {
             center: coords[0],
             zoom: options.zoom
           },
-          { animate: animated });
-        }
+          {
+            animate: animated
+          }
+        );
       }
-
     };
   };
 
