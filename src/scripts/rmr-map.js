@@ -221,6 +221,10 @@
       }
     };
 
+    /**
+      @param lat {int} : 0-based index of pin to be selected; or, if two arguments provided, the latitude value to zoom to
+      @param lon {int, optional} : if two arguments provided, the longitude value to zoom to
+     */
     this.zoomTo = function(lat, lon) {
 
       let loc = null;
